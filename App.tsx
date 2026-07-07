@@ -1,7 +1,6 @@
-import React from 'react';
-// import LoginScreen from './src/screens/auth/LoginScreen';
-import Splash from './src/screens/onboarding/splash';
+import React from "react";
+import AppNavigator from "./src/navigation/AppNavigator";
 
 export default function App() {
-  return <Splash />;
+  return <AppNavigator />;
 }

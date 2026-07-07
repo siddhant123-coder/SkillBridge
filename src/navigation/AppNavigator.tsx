@@ -1,0 +1,29 @@
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import LoginScreen from "../screens/onboarding/login";
+import Splash from "../screens/onboarding/splash";
+
+const Stack = createNativeStackNavigator();
+
+export default function AppNavigator() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        <Stack.Screen
+          name="Splash"
+          component={Splash}
+        />
+
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+        />
+
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
