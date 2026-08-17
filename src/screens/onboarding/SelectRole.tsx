@@ -1,99 +1,135 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-import RoleCard from "../../components/RoleCard/RoleCard";
-import { STRINGS } from "../../constants/strings";
+import RoleCard from "../../components/role/RoleCard";
+import HeaderBar from "../../components/common/HeaderBar";
+import PrimaryButton from "../../components/common/PrimaryButton";
+import { colors } from "../../theme/colors";
+import { spacing } from "../../theme/spacing";
+import { typography } from "../../theme/typography";
 import { useAuth } from "../../context/AuthContext";
+import { UserRole } from "../../types/user";
 
 export default function SelectRole() {
   const navigation = useNavigation<any>();
-
   const { setRole } = useAuth();
+  const [selectedRole, setSelectedRole] = useState<UserRole>("learner");
 
-  const [selectedRole, setSelectedRole] = useState<
-    "teacher" | "learner" | null
-  >(null);
-
-  function handleContinue(role: "teacher" | "learner") {
-    setSelectedRole(role);
-    setRole(role);
-
-    setTimeout(() => {
-      navigation.replace("Home");
-    }, 150);
+  function handleContinue() {
+    setRole(selectedRole);
+    navigation.navigate("CreateProfile", { selectedRole });
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.subtitle}>
-          {STRINGS.ONE_QUICK_THING}
-        </Text>
+    <SafeAreaView style={styles.container}>
+      <HeaderBar showBack showRoleBadge={false} />
 
-        <Text style={styles.title}>
-          {STRINGS.WHO_ARE_YOU}
-        </Text>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <Text style={styles.eyebrow}>ONE QUICK THING</Text>
+          <Text style={styles.title}>Who are you?</Text>
+          <Text style={styles.subtitle}>
+            Choose your primary goal on SkillBridge
+          </Text>
+        </View>
 
-        <RoleCard
-          title={STRINGS.TEACH_SKILL}
-          selected={selectedRole === "teacher"}
-          color="#FF7A45"
-          onPress={() => handleContinue("teacher")}
-        />
+        <View style={styles.rolesContainer}>
+          <RoleCard
+            subtitle="OPTION A · COACH"
+            title="Teach a Skill"
+            description="Share your expertise, set your rates, verify credentials, and receive local coaching requests."
+            icon="fitness-outline"
+            selected={selectedRole === "trainer"}
+            color={colors.trainer}
+            onPress={() => setSelectedRole("trainer")}
+          />
 
-        <RoleCard
-          title={STRINGS.LEARN_SKILL}
-          selected={selectedRole === "learner"}
-          color="#00D084"
-          onPress={() => handleContinue("learner")}
-        />
-      </View>
+          <RoleCard
+            subtitle="OPTION B · LEARNER"
+            title="Learn a Skill"
+            description="Discover verified local coaches, request 1-on-1 sessions, chat, and learn hands-on."
+            icon="school-outline"
+            selected={selectedRole === "learner"}
+            color={colors.learner}
+            onPress={() => setSelectedRole("learner")}
+          />
+        </View>
 
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>
-          {STRINGS.SWITCH_ROLE}
-        </Text>
-      </View>
-    </View>
+        <View style={styles.footer}>
+          <PrimaryButton
+            title={`Continue as ${selectedRole === "trainer" ? "Coach" : "Learner"}`}
+            variant={selectedRole === "trainer" ? "trainer" : "learner"}
+            size="lg"
+            onPress={handleContinue}
+            style={styles.continueBtn}
+          />
+          <Text style={styles.footerText}>
+            ⚡ You can seamlessly switch between Coach & Learner modes anytime
+          </Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0F1117",
+    backgroundColor: colors.background,
   },
-
+  content: {
+    padding: spacing.xl,
+    paddingBottom: spacing.xxxl,
+  },
   header: {
-    flex: 2,
-    justifyContent: "center",
     alignItems: "center",
+    marginTop: spacing.sm,
+    marginBottom: spacing.xxl,
   },
-
-  footer: {
-    flex: 1,
-    justifyContent: "flex-end",
-    alignItems: "center",
-    paddingBottom: 40,
-  },
-
-  subtitle: {
-    color: "#A0A0A0",
-    fontSize: 14,
-    marginBottom: 10,
-    letterSpacing: 1,
-  },
-
-  title: {
-    color: "white",
-    fontSize: 32,
+  eyebrow: {
+    ...typography.caption,
+    color: colors.textMuted,
+    letterSpacing: 2,
     fontWeight: "700",
-    marginBottom: 40,
   },
-
-  footerText: {
-    color: "#6B7280",
+  title: {
+    ...typography.heading,
+    color: colors.textPrimary,
+    fontSize: 32,
+    fontWeight: "800",
+    marginTop: 4,
+  },
+  subtitle: {
+    ...typography.body,
+    color: colors.textMuted,
+    marginTop: spacing.xs,
     fontSize: 14,
+  },
+  rolesContainer: {
+    marginBottom: spacing.xl,
+  },
+  footer: {
+    alignItems: "center",
+    marginTop: spacing.md,
+  },
+  continueBtn: {
+    width: "100%",
+  },
+  footerText: {
+    ...typography.caption,
+    color: colors.textMuted,
+    marginTop: spacing.lg,
+    textAlign: "center",
+    fontSize: 12,
   },
 });

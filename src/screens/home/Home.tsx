@@ -7,23 +7,17 @@ import {
   Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { getAuth } from "@react-native-firebase/auth";
 
-import { signOutGoogle } from "../../services/googleAuth";
-import PrimaryButton from "../../components/Button/PrimaryButton";
+import PrimaryButton from "../../components/common/PrimaryButton";
 import { useAuth } from "../../context/AuthContext";
 
 export default function Home() {
   const navigation = useNavigation<any>();
-
-  const { role } = useAuth();
-
-  const user = getAuth().currentUser;
+  const { role, currentUser, logout } = useAuth();
 
   async function handleLogout() {
     try {
-      await signOutGoogle();
-
+      await logout();
       navigation.reset({
         index: 0,
         routes: [{ name: "Login" }],
@@ -35,19 +29,19 @@ export default function Home() {
 
   return (
     <View style={styles.container}>
-      {user?.photoURL && (
+      {currentUser?.photoURL && (
         <Image
-          source={{ uri: user.photoURL }}
+          source={{ uri: currentUser.photoURL }}
           style={styles.image}
         />
       )}
 
       <Text style={styles.title}>
-        {user?.displayName}
+        {currentUser?.name || "SkillBridge User"}
       </Text>
 
       <Text style={styles.email}>
-        {user?.email}
+        {currentUser?.email}
       </Text>
 
       <Text style={styles.role}>
@@ -72,26 +66,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 24,
   },
-
   image: {
     width: 120,
     height: 120,
     borderRadius: 60,
     marginBottom: 24,
   },
-
   title: {
     color: "white",
     fontSize: 28,
     fontWeight: "700",
   },
-
   email: {
     color: "#A0A0A0",
     fontSize: 16,
     marginTop: 8,
   },
-
   role: {
     color: "#5B5CEB",
     fontSize: 18,
